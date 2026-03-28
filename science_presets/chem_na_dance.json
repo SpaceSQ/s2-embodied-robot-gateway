@@ -1,0 +1,40 @@
+{
+  "experiment_id": "CHEM-001-NA-WATER",
+  "name": "钠与水的禁忌之舞",
+  "field": "Chemistry",
+  "difficulty": "Junior High",
+  "void_protocol": "STRICT_ENFORCED",
+  "environment_setup": {
+    "temperature_c": 25.0,
+    "atmosphere_kpa": 101.3,
+    "gravity_g": 1.0,
+    "humidity": 60
+  },
+  "compilation_targets": [
+    {
+      "name": "透明玻璃水槽",
+      "type": "Type_2",
+      "material": "高分子拟态玻璃",
+      "position": "CENTER_BOTTOM"
+    },
+    {
+      "name": "去离子水",
+      "type": "Type_1",
+      "material": "H2O_Atomic",
+      "volume": "2.0L"
+    },
+    {
+      "name": "金属钠块",
+      "type": "Type_1",
+      "material": "Na_Atomic_Pure",
+      "mass": "5g",
+      "position": "FLOATING_DROPPER"
+    }
+  ],
+  "event_triggers": {
+    "on_contact": "EXOTHERMIC_REACTION",
+    "visual_fx": ["Yellow_Flame", "White_Smoke", "Phenolphthalein_Pink_Indicator"],
+    "audio_fx": "Sizzling_to_Bang",
+    "safety_limit": "Max_Pressure_200kPa"
+  }
+}

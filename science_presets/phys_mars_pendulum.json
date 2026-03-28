@@ -1,0 +1,32 @@
+{
+  "experiment_id": "PHYS-002-MARS-PENDULUM",
+  "name": "牛顿在火星：重力摆实验",
+  "field": "Physics",
+  "difficulty": "Senior High",
+  "void_protocol": "OBSERVER_MODE",
+  "environment_setup": {
+    "temperature_c": -63.0,
+    "atmosphere_kpa": 0.6,
+    "gravity_g": 0.38, 
+    "visual_theme": "Mars_Utopia_Plains"
+  },
+  "compilation_targets": [
+    {
+      "name": "标准单摆支架",
+      "type": "Type_3",
+      "material": "MR_Fluid_Skeleton",
+      "height": "1.5m"
+    },
+    {
+      "name": "精密铜球",
+      "type": "Type_2",
+      "mass": "0.5kg",
+      "rope_length": "1.0m"
+    }
+  ],
+  "measurement_tools": {
+    "stopwatch": "AUTO_SYNC",
+    "period_counter": "LASER_GATE",
+    "data_export": "CSV_S2_Datalake"
+  }
+}
