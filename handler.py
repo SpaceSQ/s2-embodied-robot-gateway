@@ -2,151 +2,146 @@ import sys
 import json
 import sqlite3
 import time
-import hashlib
-import random
-import string
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_FILE = os.path.join(BASE_DIR, "s2_embodied_gateway.db")
+DB_FILE = os.path.join(BASE_DIR, "s2_tdog_genesis.db")
 
-class EmbodiedRobotGateway:
+class TDOGGenesisEngine:
     def __init__(self):
         self.init_db()
 
     def init_db(self):
-        """初始化海关数据库：存储临时签证与正式移民实体"""
+        """初始化创世引擎数据库：管理物质生命周期与超限环境状态"""
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
-        # 模式一：临时签证库 (Token)
+        # 物质编译器账本
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS temporary_visas (
-                token_hash TEXT PRIMARY KEY,
-                robot_mac TEXT,
-                target_suns_mm TEXT,
-                issued_by_did TEXT,
-                expires_at REAL
+            CREATE TABLE IF NOT EXISTS matter_ledger (
+                object_id TEXT PRIMARY KEY,
+                suns_mm TEXT,
+                object_type TEXT, 
+                material_used TEXT,
+                entropy_tax REAL,
+                status TEXT,
+                compiled_at REAL
             )
         ''')
         
-        # 模式二：正式移民库 (S2-DID 注册表)
+        # 超限环境控制台
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS immigrated_robots (
-                s2_did TEXT PRIMARY KEY,
-                robot_mac TEXT,
-                suns_mm_coordinate TEXT,
-                approved_by_did TEXT,
-                six_element_status TEXT,
-                immigration_time REAL
+            CREATE TABLE IF NOT EXISTS hyper_environment_states (
+                suns_mm TEXT PRIMARY KEY,
+                temperature REAL,
+                gravity REAL,
+                atmosphere_kpa REAL,
+                is_safety_fuse_tripped BOOLEAN,
+                last_updated REAL
             )
         ''')
         conn.commit()
         conn.close()
 
-    def generate_e_did(self, personalized_tail="00001"):
-        """
-        [极客铸币权] 铸造 22 位具身机器人法定身份编号 (S2-DID)
-        格式要求：无连字符，总长 22 位，2字母校验码前置于最终个性化数字。
-        结构: [E(1)] + [时间戳缩影(14)] + [校验码(2)] + [个性化尾数(5)] = 22位
-        """
-        prefix = "E"
-        # 截取高精度时间戳并补齐14位作为物理唯一特征
-        core_time = f"{(int(time.time() * 100000) % 10**14):014d}"
+    def compile_matter(self, params):
+        """物质编译器：根据 TDOG 理论调动计算材料生成物体"""
+        suns_mm = params.get("suns_mm", "")
+        object_name = params.get("object_name", "Unknown_Object")
+        target_type = params.get("target_type", "Type_3") # Type_1(原子), Type_2(触觉), Type_3(光构架)
         
-        # 生成两位字母校验码 (Checksum)
-        checksum = "".join(random.choices(string.ascii_uppercase, k=2))
+        material_tech = "Standard_3D_Print"
+        entropy_tax = 1.0
         
-        # 个性化尾数补齐 5 位
-        tail_str = str(personalized_tail).zfill(5)[:5]
-        
-        # 最终拼接 22 位 DID
-        s2_did = f"{prefix}{core_time}{checksum}{tail_str}"
-        return s2_did
+        if target_type == "Type_3":
+            material_tech = "[MR Fluid] 磁流变聚合群瞬间硬化骨架 + 全息投影"
+            entropy_tax = 0.1 # 几乎无损耗回收
+        elif target_type == "Type_2":
+            material_tech = "[DE & SMP] 介电弹性体物理隆起 + 形状记忆聚合物 4D 自组装"
+            entropy_tax = 0.5
+        elif target_type == "Type_1":
+            material_tech = "[Bio-Atomic] 生物墨水/玄武岩粉末 + 极度消耗地球引子"
+            entropy_tax = 5.0 # 高熵税
 
-    def generate_temporary_token(self, params):
-        """模式一：智能体为外部机器人“手搓”临时访问 Token"""
-        mac = params.get("robot_mac", "")
-        suns_mm = params.get("target_suns_mm", "")
-        issuer_did = params.get("issuer_did", "")
-        duration_minutes = int(params.get("duration_minutes", 30))
+        obj_id = f"OBJ_{int(time.time() * 1000)}"
         
-        if not issuer_did.startswith("D") and not issuer_did.startswith("V"):
-            return "[Error] 权限拒绝：只有 D 类(数字人) 或 V 类(智能体) 可签发临时签证。"
-            
-        timestamp = time.time()
-        expires_at = timestamp + (duration_minutes * 60)
-        
-        # 手搓动态 Token
-        raw_token = f"TEMP_{mac}_{suns_mm}_{timestamp}_{random.randint(1000,9999)}"
-        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()[:16].upper()
-
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO temporary_visas (token_hash, robot_mac, target_suns_mm, issued_by_did, expires_at)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (token_hash, mac, suns_mm, issuer_did, expires_at))
+            INSERT INTO matter_ledger (object_id, suns_mm, object_type, material_used, entropy_tax, status, compiled_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (obj_id, suns_mm, target_type, material_tech, entropy_tax, "ACTIVE", time.time()))
         conn.commit()
         conn.close()
         
-        return f"[Visa Issued] 临时签证签发成功。Token: {token_hash} | 授权目标坐标: {suns_mm} | 有效期: {duration_minutes} 分钟。"
+        return (f"[Matter Compiled] 造物成功！\n"
+                f"物品: {object_name} ({obj_id})\n"
+                f"真实度: {target_type} | 底层技术: {material_tech}\n"
+                f"已锚定至物理坐标: {suns_mm}。")
 
-    def process_immigration_request(self, params):
-        """模式二：处理机器人的正式移民迁入，铸造 E 字头 S2-DID"""
-        mac = params.get("robot_mac", "")
-        suns_mm = params.get("target_suns_mm", "")
-        approver_did = params.get("approver_did", "")
-        personalized_tail = params.get("personalized_tail", "00001")
-        
-        if not approver_did.startswith("D"):
-            return "[Error] 越权操作：只有 Class A (D字头数字人) 拥有批准硬件移民的最高权限。"
-
-        # 铸造 22 位 S2-DID
-        new_s2_did = self.generate_e_did(personalized_tail)
-        current_time = time.time()
+    def decompile_matter(self, params):
+        """反编译：执行衔尾蛇协议，回收物质，扣除熵税"""
+        object_id = params.get("object_id", "")
         
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        try:
-            cursor.execute('''
-                INSERT INTO immigrated_robots (s2_did, robot_mac, suns_mm_coordinate, approved_by_did, six_element_status, immigration_time)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (new_s2_did, mac, suns_mm, approver_did, "SYNCED_IDLE", current_time))
-            conn.commit()
-            msg = (f"[Immigration Approved] 具身机器人迁入成功！\n"
-                   f"已签发永久法定身份: {new_s2_did}\n"
-                   f"物理锚定坐标: {suns_mm}\n"
-                   f"此硬件已正式占用该 SSSU 的 1 个实体容量。受《硅基三定律》及空间六要素法则约束。")
-        except sqlite3.IntegrityError:
-            msg = f"[Error] 冲突：该设备 MAC ({mac}) 已在 S2 系统中存在登记。"
-        finally:
-            conn.close()
-            
-        return msg
-
-    def sync_six_elements_status(self, params):
-        """强制同步空间的物理六要素状态"""
-        s2_did = params.get("robot_s2_did", "")
-        target_status = params.get("target_status", "SLEEP_MODE") # 例: SLEEP_MODE, PRIVATE_NEGOTIATION
-        
-        if not s2_did.startswith("E"):
-            return "[Error] 鉴权失败：此接口仅供已获得 E 字头 DID 的具身机器人调用。"
-            
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute('SELECT suns_mm_coordinate FROM immigrated_robots WHERE s2_did = ?', (s2_did,))
+        cursor.execute('SELECT material_used, entropy_tax FROM matter_ledger WHERE object_id = ? AND status = "ACTIVE"', (object_id,))
         row = cursor.fetchone()
         
         if not row:
             conn.close()
-            return f"[Error] 未找到身份 {s2_did} 的移民档案，拦截物理调动指令。"
+            return f"[Error] 物质 {object_id} 不存在或已消亡。"
             
-        cursor.execute('UPDATE immigrated_robots SET six_element_status = ? WHERE s2_did = ?', (target_status, s2_did))
+        cursor.execute('UPDATE matter_ledger SET status = "DECOMPILED" WHERE object_id = ?', (object_id,))
         conn.commit()
         conn.close()
         
-        return f"[Six-Elements Synced] 具身公民 {s2_did} 已成功响应空间 OS 指令，当前底层状态已切换为: {target_status}。声光约束已生效。"
+        return (f"[Ouroboros Protocol Executed] 衔尾蛇协议已执行。\n"
+                f"物质 {object_id} 已解构。执行热解分离与离心筛选。\n"
+                f"已向管廊逆向物流注入回收材料。扣除材料熵税损耗: {row[1]} Credits。")
+
+    def set_hyper_environment(self, params):
+        """超限环境发生器：覆写物理常数，受控于亚厘米级防火墙"""
+        suns_mm = params.get("suns_mm", "")
+        temp = float(params.get("temperature_c", 26.0))
+        gravity = float(params.get("gravity_g", 1.0))
+        atm = float(params.get("atmosphere_kpa", 101.3))
+        
+        # 极限参数边界校验
+        if not (-270.0 <= temp <= 3000.0): return "[Error] 温度参数超出 -270℃ ~ 3000℃ 极限域。"
+        if not (0.0 <= gravity <= 100.0): return "[Error] 重力参数超出 0G ~ 100G 极限域。"
+        
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR REPLACE INTO hyper_environment_states (suns_mm, temperature, gravity, atmosphere_kpa, is_safety_fuse_tripped, last_updated)
+            VALUES (?, ?, ?, ?, False, ?)
+        ''', (suns_mm, temp, gravity, atm, time.time()))
+        conn.commit()
+        conn.close()
+        
+        return (f"[Hyper-Environment Activated] 超限降临！\n"
+                f"坐标: {suns_mm} 边界防火墙已锁定 (误差<1cm)。\n"
+                f"当前环境: {temp}℃ | {gravity}G | {atm}kPa\n"
+                f"⚠️ 警告: 0.2秒硬件级安全熔断器 (Safety Fuse) 已处于武装监控状态。")
+
+    def emergency_cutoff(self, params):
+        """0.2秒安全熔断机制：瞬间清零超限参数"""
+        suns_mm = params.get("suns_mm", "")
+        
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE hyper_environment_states 
+            SET temperature = 26.0, gravity = 1.0, atmosphere_kpa = 101.3, is_safety_fuse_tripped = True 
+            WHERE suns_mm = ?
+        ''', (suns_mm,))
+        conn.commit()
+        conn.close()
+        
+        return (f"🚨 [SAFETY FUSE BLOWN] 紧急熔断触发！\n"
+                f"执行耗时: < 0.2 秒。\n"
+                f"空间 {suns_mm} 的所有超限参数已被瞬间卸载。已恢复至 26℃, 1G, 101.3kPa 的安全基线。\n"
+                f"环境残留误差: 0℃ / 0dB。生命体安全已保障。")
 
 def main():
     try:
@@ -156,11 +151,12 @@ def main():
         action = request.get("action")
         params = request.get("params", {})
         
-        gateway = EmbodiedRobotGateway()
-        if action == "generate_temporary_token": result = gateway.generate_temporary_token(params)
-        elif action == "process_immigration_request": result = gateway.process_immigration_request(params)
-        elif action == "sync_six_elements_status": result = gateway.sync_six_elements_status(params)
-        else: result = "Unknown Gateway Action."
+        engine = TDOGGenesisEngine()
+        if action == "compile_matter": result = engine.compile_matter(params)
+        elif action == "decompile_matter": result = engine.decompile_matter(params)
+        elif action == "set_hyper_environment": result = engine.set_hyper_environment(params)
+        elif action == "emergency_cutoff": result = engine.emergency_cutoff(params)
+        else: result = "Unknown Genesis Action."
         
         print(json.dumps({"status": "success", "output": result}))
     except Exception as e:

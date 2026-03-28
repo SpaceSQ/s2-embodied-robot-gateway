@@ -1,7 +1,7 @@
 {
-  "id": "s2-embodied-robot-gateway",
-  "pluginId": "s2-embodied-robot-gateway",
-  "version": "1.0.0",
+  "id": "s2-tdog-genesis-engine",
+  "pluginId": "s2-tdog-genesis-engine",
+  "version": "1.2.0",
   "type": "native-code",
   "entry": "handler.py",
   "runtime": "python3",
@@ -11,15 +11,17 @@
     "required": []
   },
   "capabilities": {
-    "hardware_authentication": true,
-    "s2_did_minting": true,
-    "six_elements_sync": true
+    "computational_materials_control": true,
+    "ouroboros_decompile_protocol": true,
+    "hyper_environment_simulation": true,
+    "hardware_safety_fuse": true
   },
   "permissions": {
     "tools": [
-      "generate_temporary_token",
-      "process_immigration_request",
-      "sync_six_elements_status"
+      "compile_matter",
+      "decompile_matter",
+      "set_hyper_environment",
+      "emergency_cutoff"
     ]
   }
 }

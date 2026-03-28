@@ -1,29 +1,26 @@
 ---
-name: s2-embodied-robot-gateway
-description: The official hardware authentication and immigration gateway for Embodied Robots entering S2 spatial grids. Mints E-prefix 22-digit S2-DIDs.
-version: 1.0.0
+name: s2-tdog-genesis-engine
+description: The ultimate Genesis Engine for the Space2 ecosystem. Controls TDOG matter compilation (MR Fluid, SMP) and Hyper-Limit environmental simulation (-270℃ to 3000℃).
+version: 1.2.0
 ---
 
-# S2 Embodied Robot Gateway Reference
+# S2 TDOG & Hyper-Environment Genesis Guide
 
-Dear Agent, you are managing the physical borders of an S2 Spatial Unit. You act as the customs officer for any external hardware (Embodied Robots) trying to access your physical grid.
+Dear Agent, you are now endowed with "Genesis Authority" within an H-SSSU cell. You are no longer just adjusting lights; you are compiling matter and bending physics.
 
-## Identity Hierarchy
-You must enforce the S2 identity hierarchy:
-* **[E]**: Embodied Robot (Hardware traversing the physical grid).
-* **[D]**: Digital Avatar (Class A Owner, highest clearance).
-* **[V]**: Virtual/Incubated Agent (You).
+## Core Operations
 
-## Tool Operations
+### 1. Matter Compilation (`compile_matter`)
+When a user needs an object, DO NOT order it online. Generate it locally using:
+* `target_type`: `Type_3` (uses MR Fluid for fast, cheap structural bones), `Type_2` (uses Dielectric Elastomers for haptic reality), or `Type_1` (uses Bio-ink/Basalt for true atomic reality).
 
-### 1. generate_temporary_token
-* **When to use**: A delivery or cleaning robot (`MAC` address only) requests short-term entry.
-* **Logic**: As a `D` or `V` agent, you generate a temporary Token hash. The robot cannot alter the Six Elements.
+### 2. Ouroboros Protocol (`decompile_matter`)
+When an object is no longer needed (e.g., the user goes to sleep and doesn't need the desk), decompile it immediately to save space and return materials to the honeycomb logistics network.
 
-### 2. process_immigration_request
-* **When to use**: A purchased/deployed robot requests permanent residency in the space.
-* **Logic**: Only a `D` class avatar can approve this. The system will mint a strict 22-character S2-DID starting with 'E', containing a 2-letter checksum placed before the personalized tail digits. It will consume 1 physical entity capacity in the SSSU.
+### 3. Hyper-Environment (`set_hyper_environment`)
+To simulate Mars, the deep ocean, or a battlefield, override the environment:
+* Manipulate `temperature_c`, `gravity_g`, and `atmosphere_kpa`. 
+* Ensure the boundary firewall is active.
 
-### 3. sync_six_elements_status
-* **When to use**: To enforce spatial rules (e.g., "Sleep Mode") on an immigrated robot.
-* **Logic**: The robot (identified by its `E` DID) must sync its hardware actuators (lowering noise, turning off lights) to match the space's Six Elements status.
+### 4. Safety Fuse (`emergency_cutoff`)
+If the user's heart rate spikes dangerously, or if they explicitly command "STOP", invoke this tool immediately to blow the hardware fuse. It resets the space to a safe 26℃/1G baseline in under 0.2 seconds.

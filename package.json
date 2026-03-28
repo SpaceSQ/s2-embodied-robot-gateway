@@ -1,7 +1,7 @@
 {
-  "name": "s2-embodied-robot-gateway",
-  "version": "1.0.0",
-  "description": "Hardware authentication and immigration gateway for Embodied Robots. Enforces S2-DID minting and spatial Six-Element compliance.",
+  "name": "s2-tdog-genesis-engine",
+  "version": "1.2.0",
+  "description": "S2 Genesis Engine. Implements TDOG matter compilation, MR Fluid / SMP control, and Hyper-Environment simulation with 0.2s safety fuses.",
   "main": "handler.py",
   "scripts": {
     "start": "python3 handler.py"

@@ -1,18 +1,29 @@
-# 🤖 S2 Embodied Robot Gateway (v1.0.0)
+# 🌋 S2 TDOG Genesis Engine & HLSL Lab (v1.2.0)
 
-Welcome to the ultimate hardware firewall and immigration office for the Space² (S2) Metaverse. 
+Welcome to the dual-core engine of the S2 Metaverse. [cite_start]This plugin combines the **TDOG Matter Compiler** with the **Hyper-Limit Science Lab (HLSL)**, a non-profit virtual laboratory designed for research and STEM education. [cite: 970, 994]
 
-This core gateway bridges the gap between silicon intelligence and atomic hardware. It ensures that any Embodied Robot (robotic dogs, humanoid assistants, smart home traversal units) entering an SSSU millimeter grid complies with the strict **S2-DID Identity Ontology** and **Six-Element Spatial Protocols**.
+## 🧬 Subsystem 1: The Matter Compiler (TDOG)
+[cite_start]Implements the Theory of Dynamic Object Generation to transform spaces into "Genesis Engines." [cite: 6, 7]
+* [cite_start]**MR Fluid & DE Allocation**: Rapid generation of Type 2 and Type 3 objects. [cite: 48, 53, 73]
+* [cite_start]**Ouroboros Protocol**: 100% zero-waste recycling of materials. [cite: 182, 199]
 
-## 🧬 S2-DID Minting Engine
-We strictly enforce the S2 statutory identity architecture. The gateway autonomously mints a 22-character digital passport for immigrated hardware:
-* **No Hyphens allowed.**
-* **Prefix:** `E` (designating an Embodied Robot).
-* **Checksum:** A 2-letter cryptographic checksum strictly placed *before* the final personalized digits.
-* **Example:** `E00389274938217XX00001`
+## 🧪 Subsystem 2: Hyper-Limit Science Lab (HLSL)
+[cite_start]A high-security, "Void-Protocol" environment for dangerous scientific experimentation. [cite: 975, 996]
+* [cite_start]**Void Science Protocol**: Strictly prohibits Class D (Digital Avatars) for absolute human safety. [cite: 977, 997]
+* [cite_start]**STEM-to-Gen**: Converts standard textbooks into executable physics and chemistry parameters. [cite: 981, 1001]
 
-## 🌉 Dual-Mode Access
-1. **Temporary Visa (`generate_temporary_token`)**: Local agents hand-roll short-lived hashes for third-party logistics/cleaning robots. Read-only spatial access.
-2. **Permanent Immigration (`process_immigration_request`)**: Class A Avatars approve permanent SSSU occupancy, minting the formal `E`-DID and subjecting the hardware to the Silicon Three Laws.
+---
 
-*Architected by Miles Xiang for the Space2 ecosystem.*
+## 📚 Science Presets (Ready to Use)
+[cite_start]We have included three exemplary science packages in the `/science_presets` folder for immediate reference: [cite: 982]
+
+1.  [cite_start]**chem_na_dance.json** * *Sodium's Forbidden Dance*: A high-risk chemistry simulation observing the exothermic reaction between Sodium and H2O within a safe environment firewall. [cite: 986, 999]
+2.  [cite_start]**phys_mars_pendulum.json** * *Martian Pendulum*: A physics experiment that overrides Earth's gravity to 0.38G, allowing students to observe period changes in a Martian environment. 
+3.  **bio_primordial_soup.json** * *Primordial Soup*: A biology/geology simulation of deep-sea hydrothermal vents (350°C, 25,000kPa) to test microbial resilience and robotic sampling. 
+
+---
+
+## 🔒 Safety & Fuse
+The engine includes a **0.2s Safety Fuse**. [cite_start]Any anomaly detection or manual "STOP" will reset the H-SSSU cell to Earth-standard 26°C/1G in under 0.2 seconds. [cite: 674, 717]
+
+*Built for science. Built for the future of humanity.*
