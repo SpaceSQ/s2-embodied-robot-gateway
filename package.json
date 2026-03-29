@@ -12,6 +12,9 @@
     "compat": {
       "pluginApi": "^1.0.0"
     },
+    "build": {
+      "openclawVersion": "^1.0.0"
+    },
     "extensions": [
       "./openclaw.plugin.json"
     ]
