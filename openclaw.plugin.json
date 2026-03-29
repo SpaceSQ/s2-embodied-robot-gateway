@@ -1,7 +1,7 @@
 {
   "id": "s2-embodied-robot-gateway",
   "pluginId": "s2-embodied-robot-gateway",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "native-code",
   "entry": "handler.py",
   "runtime": "python3",
@@ -13,7 +13,8 @@
   "capabilities": {
     "hardware_authentication": true,
     "s2_did_minting": true,
-    "six_elements_sync": true
+    "six_elements_sync": true,
+    "zero_trust_vtm_audit": true
   },
   "permissions": {
     "tools": [
