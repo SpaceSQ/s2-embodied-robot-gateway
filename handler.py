@@ -15,11 +15,10 @@ class EmbodiedRobotGateway:
         self.init_db()
 
     def init_db(self):
-        """初始化海关数据库：存储临时签证与正式移民实体 (V2.0.0 新增 VTM 审计追踪)"""
+        """初始化海关数据库：存储临时签证与正式移民实体"""
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
-        # 模式一：临时签证库 (Token)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS temporary_visas (
                 token_hash TEXT PRIMARY KEY,
@@ -30,7 +29,6 @@ class EmbodiedRobotGateway:
             )
         ''')
         
-        # 模式二：正式移民库 (S2-DID 注册表 - V2.0 新增 vtm_hash 边缘隔离字段)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS immigrated_robots (
                 s2_did TEXT PRIMARY KEY,
@@ -54,7 +52,6 @@ class EmbodiedRobotGateway:
         return f"{prefix}{core_time}{checksum}{tail_str}"
 
     def generate_temporary_token(self, params):
-        """模式一：智能体为外部机器人签发临时访问 Token"""
         mac = params.get("robot_mac", "")
         suns_mm = params.get("target_suns_mm", "")
         issuer_did = params.get("issuer_did", "")
@@ -81,24 +78,25 @@ class EmbodiedRobotGateway:
         return f"[Visa Issued] 临时签证签发成功。Token: {token_hash} | 坐标: {suns_mm} | 有效期: {duration_minutes} 分钟。"
 
     def process_immigration_request(self, params):
-        """模式二：处理机器人的正式移民迁入 (V2.0 强制 6D-VTM 核验与边缘脱敏)"""
+        """处理机器人的正式移民迁入 (V2.1.0 增加 User-in-the-loop 硬校验)"""
         mac = params.get("robot_mac", "")
         suns_mm = params.get("target_suns_mm", "")
         approver_did = params.get("approver_did", "")
         personalized_tail = params.get("personalized_tail", "00001")
-        vtm_payload = params.get("vtm_payload", {}) # V2.0 新增
+        vtm_payload = params.get("vtm_payload", {})
+        
+        # [合规修复 1]: 代码级强制校验人类授权，绝不依赖 Agent 自觉
+        human_approval = params.get("human_approval_confirmed", False)
+        if not human_approval:
+            return "[Error] 零信任熔断：缺少人类领主 (User-in-the-loop) 的明确授权布尔值。请先向人类确认，并在参数中传递 human_approval_confirmed: true。"
         
         if not approver_did.startswith("D"):
             return "[Error] 越权操作：只有 Class A (D字头数字人) 拥有批准硬件移民的最高权限。"
 
-        # V2.0 强制 6D-VTM 格式审查
         if not isinstance(vtm_payload, dict) or len(vtm_payload.keys()) < 6:
-            return "[Error] 拒绝入境：未能提供完整的 6D-VTM (六维厂商透明度宣言)，触发零信任熔断。"
+            return "[Error] 拒绝入境：未能提供完整的 6D-VTM，触发零信任熔断。(注: TLS握手由边缘反向代理层完成，此处要求传入解析后的 Payload)"
 
-        # 生成边缘本地化的 VTM 脱敏哈希，供后续 S2 主网白盒审计使用 (Zero-Exfiltration)
         vtm_hash = hashlib.sha256(json.dumps(vtm_payload, sort_keys=True).encode()).hexdigest()
-
-        # 铸造 22 位 S2-DID
         new_s2_did = self.generate_e_did(personalized_tail)
         current_time = time.time()
         
@@ -112,9 +110,8 @@ class EmbodiedRobotGateway:
             conn.commit()
             msg = (f"[Immigration Approved] 具身机器人迁入成功！\n"
                    f"已签发永久法定身份: {new_s2_did}\n"
-                   f"物理锚定坐标: {suns_mm}\n"
-                   f"[Privacy Guard] MAC 地址已在边缘网关本地隔离。6D-VTM 脱敏哈希 ({vtm_hash[:8]}...) 已生成，随时准备响应主网审计。\n"
-                   f"此硬件受《硅基三定律》及空间六要素法则绝对约束。")
+                   f"[Privacy Guard] MAC 地址已本地隔离。6D-VTM 脱敏哈希 ({vtm_hash[:8]}...) 已生成，随时准备响应主网审计。\n"
+                   f"[Logic Boundary] 身份登记完成。物理 TLS 握手监控由外部 Nginx/Envoy 代理层执行。")
         except sqlite3.IntegrityError:
             msg = f"[Error] 冲突：该设备 MAC ({mac}) 已在 S2 系统中存在登记。"
         finally:
@@ -143,7 +140,9 @@ class EmbodiedRobotGateway:
         conn.commit()
         conn.close()
         
-        return f"[Six-Elements Synced] 具身公民 {s2_did} 已成功响应空间指令，当前底层状态切换为: {target_status}。"
+        # [合规修复 2]: 明确声明此处仅更新数据库状态，硬件执行由下位机负责
+        return (f"[Six-Elements Registry Synced] 具身公民 {s2_did} 状态已变更为: {target_status}。\n"
+                f"[Logic Boundary] 本网关已更新控制面数据库。实际物理执行（关闭灯光/降低噪音）将由监听此 DB 的下位机 IoT 守护进程（如 MQTT Bridge）异步完成。")
 
 def main():
     try:

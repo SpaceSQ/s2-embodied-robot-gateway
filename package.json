@@ -1,6 +1,6 @@
 {
   "name": "s2-embodied-robot-gateway",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Hardware authentication and immigration gateway for Embodied Robots. Enforces S2-DID minting, 6D-VTM audits, and spatial Six-Element compliance.",
   "main": "handler.py",
   "scripts": {

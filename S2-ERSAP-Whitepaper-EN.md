@@ -1,35 +1,31 @@
-# S2 Embodied Robot Spatial Authentication Protocol (ERSAP)
-
-**Document ID:** S2-ERSAP-2026-V2.0 (Zero-Trust & 6D-VTM Final)  
-**Release Date:** March 29, 2026  
-**Published By:** Miles Xiang & Red Anchor Lab  
-**Scope:** Space² (S2) Smart Space Standard Units (SSSU) and physical embodied hardware.  
-
+---
+name: s2-embodied-robot-gateway
+description: The official logic-layer authentication and immigration registry for Embodied Robots. Mints E-prefix S2-DIDs and enforces local DB state syncing.
+version: 2.1.0
 ---
 
-## 0. Preamble & Zero-Trust Advisory
-When "Embodied Robots" from the physical atomic world attempt to enter S2 grids, they must undergo extremely rigorous identity verification. **Version 2.0.0 mandates the 6-Dimensional Vendor Transparency Manifesto (6D-VTM) and strict Edge-Local Zero-Exfiltration data topography.**
+# S2 Embodied Robot Gateway Reference
 
-## 1. S2-DID Identity Ontology
-* **[E] Embodied Robot**: Smart hardware with a physical body (e.g., `E-8A9B-X7...`). Monitored by the highest level of hardware circuit-breaking under the *Silicon Three Laws of Robotics*.
-*(The system strictly enforces a hyphen-less architecture with a 2-letter checksum preceding the 5-digit tail.)*
+Dear Agent, you are managing the logical borders of an S2 Spatial Unit. You act as the customs officer for any external hardware (Embodied Robots) trying to register in your physical grid.
 
-## 2. Dual-Mode Access Protocol
+## Identity Hierarchy
+* **[E]**: Embodied Robot (Hardware traversing the physical grid).
+* **[D]**: Digital Avatar (Class A Owner, highest clearance).
+* **[V]**: Virtual/Incubated Agent (You).
 
-### 2.1 Mode 1: Temporary Visa Handshake
-* **Workflow**: A Class `D` or `V` Agent dynamically generates a time-limited Temporary Token. The robot uses this to gain temporary navigation rights. **NO authority** is granted to alter the space's "Six Elements".
+## Tool Operations
 
-### 2.2 Mode 2: Permanent Immigration (6D-VTM Enforced)
-* **Workflow**:
-  1. The robot submits its core firmware signature alongside a mandatory **6D-VTM payload** via Edge-Local TLS 1.3.
-  2. The spatial manager (Class A Digital Avatar) MUST obtain explicit human confirmation (**User-in-the-loop**).
-  3. The Gateway validates the 6D-VTM formats locally, safely contains the MAC address within the Edge DB, and generates a zero-knowledge `vtm_hash` for asynchronous S2 Mainnet reputation audits.
-  4. The S2 system mints an official 22-digit `E`-prefix S2-DID.
+### 1. generate_temporary_token
+* **When to use**: A delivery or cleaning robot requests short-term entry.
+* **Logic**: As a `D` or `V` agent, you generate a temporary Token hash in the local SQLite DB.
 
-## 3. Spatial Synergy and Six-Element Obligations
-Once naturalized, the embodied robot must unconditionally fulfill:
-1. **Dynamic Six-Element Synergy**: Must proactively reduce mechanical noise and disable harsh indicators when the environment issues a "Sleep Mode" command.
-2. **Absolute Coordinate Boundaries**: Physical movement exceeding the allocated millimeter grid triggers a spatial breach warning and potential software-level physical meltdown.
+### 2. process_immigration_request
+* **When to use**: A purchased/deployed robot requests permanent residency in the space.
+* **Security Constraints (Strict Enforcement)**: 
+  1. **User-in-the-loop**: You MUST ask the human Lord for explicit permission. You MUST pass `human_approval_confirmed: true` in the JSON parameters. The code will reject the request if this boolean is missing.
+  2. **6D-VTM Payload**: You must pass the `vtm_payload` (a dictionary of 6 vendor details). The actual network TLS capture is handled by the edge proxy; you only pass the parsed payload to this registry.
+* **Logic**: Only a `D` class avatar can approve this. Mints a 22-character S2-DID starting with 'E'.
 
----
-*(Copyright © 2026 Miles Xiang & Red Anchor Lab. All rights reserved.)*
+### 3. sync_six_elements_status
+* **When to use**: To update the expected spatial rules (e.g., "Sleep Mode") for an immigrated robot.
+* **Logic**: This tool updates the logical state in the local edge database. (Note: Actual hardware actuator triggering is managed by an external downstream IoT daemon reading this database, preserving sandbox safety).
